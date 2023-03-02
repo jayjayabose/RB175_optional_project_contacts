@@ -1,5 +1,14 @@
+<% if session[:message]%>
+  <div class="message">
+    <%= session.delete(:message)%>
+  </div>
+<% end %>
+
 <ul>
   <% @contacts_list.each do |contact_id, contact| %>
     <li><%= contact.values.join(", ")%> <a href="/edit/<%= contact_id %>">Edit Contact</a></li>
   <% end%>
 </ul>
+
+<br>
+<a href="/new"> Create New Contact </a>
