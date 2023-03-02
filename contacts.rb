@@ -8,19 +8,23 @@ def root
   File.expand_path("..","__FILE__")
 end
 
-def load_contacts
-  session[:contacts] = YAML.load_file(File.join(root, "user_contacts.yml"))
+def load_contacts_from_file
+  YAML.load_file(File.join(root, "user_contacts.yml"))
+end
+
+def set_contacts_in_session
+  session[:contacts] = load_contacts_from_file
+end
+
+# Loads contacts from file at start of sesison, else returns contacts from session
+def contacts
+  set_contacts_in_session if session[:contacts].nil?
+  session[:contacts]
 end
 
 configure do
   enable :sessions
   # set :session_secret, 'secret'
-end
-
-# Loads contacts from file at start of sesison, else returns contacts from session
-def contacts
-  load_contacts if session[:contacts].nil?
-  session[:contacts]
 end
 
 # Display contacts
@@ -42,6 +46,7 @@ post "/edit/:id" do
     obj[key] = params[key] unless key == "id"
   end
   session[:contacts][params[:id]] = contact_record
+  session[:message] = "Contact updated."
   redirect "/"
 end
 
