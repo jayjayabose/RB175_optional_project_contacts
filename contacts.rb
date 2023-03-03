@@ -22,9 +22,20 @@ def contacts
   session[:contacts]
 end
 
+def get_error_message(contact)
+  # binding.pry
+  return "Name, Email Phone are required fields" if contact["name"].empty? || contact["email"].empty?  || contact["phone"].empty?
+  "Email is invalid" unless valid_email?(contact["email"])
+end
+
+def valid_email?(email)
+  email.count("@.") == 2
+end
+
 configure do
   enable :sessions
   # set :session_secret, 'secret'
+  set :erb, :escape_html => true
 end
 
 # Display contacts
@@ -45,9 +56,17 @@ post "/edit/:id" do
   contact_record = params.keys.each_with_object({}) do |key, obj|
     obj[key] = params[key] unless key == "id"
   end
-  session[:contacts][params[:id]] = contact_record
-  session[:message] = "Contact updated."
-  redirect "/"
+  error_message = get_error_message(contact_record)
+  if error_message
+    session[:message] = error_message
+    @id = params[:id]
+    @contact = contact_record
+    erb :edit
+  else
+    session[:contacts][params[:id]] = contact_record
+    session[:message] = "Contact updated."
+    redirect "/"
+  end
 end
 
 # Display new contact form

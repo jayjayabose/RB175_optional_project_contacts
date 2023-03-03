@@ -1,4 +1,10 @@
 <h3> Edit Contact </h3>
+<% if session[:message]%>
+  <div class="message">
+    <%= session.delete(:message)%>
+  </div>
+<% end %>
+
 <form action="/edit/<%= @id%>" method="post">
   <label for="name">Name:</label>
   <input type="text" name="name" id="name" value="<%= @contact["name"]%>">

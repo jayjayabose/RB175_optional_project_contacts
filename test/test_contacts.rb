@@ -72,11 +72,30 @@ class ContactsTest < Minitest::Test
 
       get last_response["Location"]
       assert_equal 200, last_response.status
-
+      
+      # can update this to check session data
       assert_includes last_response.body, "name2x"
       assert_includes last_response.body, "name2x@email.com"
       assert_includes last_response.body, "222x 222x 2222x"
       assert_includes last_response.body, "name2x notes"
     end
   end
+
+  def test_handle_edit_contact_validation
+    # @id = test_edit@email.com
+    params = {
+      "name"=>"", 
+      "email"=>"name2x@email.com", 
+      "phone"=>"222x 222x 2222x", 
+      "notes"=>"name2x notes", 
+      "id"=>"name2x@email.com"
+    }
+
+    post "/edit/name2@email.com", params do
+      # binding.pry
+      # assert_equal "Name, Email Phone are required fields", session[:message] # failes. session[:message] is nil. why?
+      assert_equal 200, last_response.status
+      assert_includes last_response.body, "Name, Email Phone are required fields"
+    end
+  end    
 end
